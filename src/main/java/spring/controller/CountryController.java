@@ -19,12 +19,12 @@ public class CountryController {
   public String listForm(Model model) {
     List<Country> countries = countryService.findAll();
     model.addAttribute("countries", countries);
-    return "listCountriesView";
+    return "listCountry";
   }
 
   @GetMapping("/add-country")
   public String addForm(Model model) {
-    return "addCountryFormView";
+    return "addCountry";
   }
 
   @PostMapping("/add-country")

@@ -1,12 +1,11 @@
 package spring.controller;
 
+import org.springframework.web.bind.annotation.*;
 import spring.domain.Event;
 import spring.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -19,16 +18,51 @@ public class EventController {
   public String listForm(Model model) {
     List<Event> events = eventService.findAll();
     model.addAttribute("events", events);
-    return "listEventsView";
+    return "listEvent";
   }
 
   @GetMapping("/add-event")
   public String addForm(Model model) {
-    return "addEventFormView";
+    model.addAttribute("event", new Event());
+    return "addEvent";
   }
 
   @PostMapping("/add-event")
-  public String addPost() {
-    return null;
+  public String addPost(Model model, @ModelAttribute("event") Event event) {
+    String name = event.getName();
+    String city = event.getCity();
+    if (!name.isEmpty() && !city.isEmpty()) {
+      eventService.add(event);
+      return "redirect:/";
+    }
+    model.addAttribute("errorMsg", "Event Name & City is required!");
+    return "addEvent";
+  }
+
+  @GetMapping("/update/{id}")
+  public String updateEventForm(Model model, @PathVariable Integer id) {
+    Event event = eventService.findById(id);
+    model.addAttribute("event", event);
+    model.addAttribute("id", id);
+    return "updateEvent";
+  }
+
+  @PostMapping("/update/{id}")
+  public String updateEvent(Model model, @ModelAttribute("event") Event event,
+                            @PathVariable Integer id) {
+    String name = event.getName();
+    String city = event.getCity();
+    if (!name.isEmpty() && !city.isEmpty()) {
+      eventService.update(id, event);
+      return "redirect:/";
+    }
+    model.addAttribute("errorMsg", "Event Name & City is required!");
+    return "updateEvent";
+  }
+
+  @DeleteMapping("/delete")
+  public String deleteEvent(Integer id) {
+    eventService.remove(id);
+    return "redirect:/";
   }
 }
